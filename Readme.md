@@ -14,6 +14,7 @@ Socketeer - Linux Library for distr. applications
 ## Synopsis
 
 This Project is a linux shared library for Linux. It provides a simple API for applications and services which desire to communicate via sockets.
+You may also use the Example, which is a simple application acting as a server or client.
 
 ## Requirements
 
@@ -24,7 +25,7 @@ This Project is a linux shared library for Linux. It provides a simple API for a
 Download the source code and copy both header and source files to your project's folder.
 ```
 $ download as zip
-$ cd "Source Code"/
+$ cd "Library/Source Code"/
 $ sudo make
 $ sudo make install
 ```
