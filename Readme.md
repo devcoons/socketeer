@@ -25,6 +25,7 @@ You may also use the Example, which is a simple application acting as a server o
 Download the source code and copy both header and source files to your project's folder.
 ```
 $ download as zip
+$ extract the project
 $ cd "Library/Source Code"/
 $ sudo make
 $ sudo make install
