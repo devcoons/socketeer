@@ -1,28 +1,74 @@
 #include "socketeer.h"
 #include "client.h"
 #include "server.h"
+#include <chrono>
 
 using namespace std;
-/* 
-	int exitrequest =0;
+using namespace std::chrono;
+std::vector<pair<std::string,milliseconds>> keepaliveList;
 
-    void callback(Parameters* parameters,void * obj)
-    {
-        size_t bytecount;
-		char buffer[4055];
-		int buffer_len = 4055;
+void keepalivecb(Parameters* parameters,void * obj)
+{
+	size_t bytecount;
+	char buffer[4055];
+	int buffer_len = 4055;
         memset(buffer, 0, buffer_len);
-		bytecount = recv(parameters->clientSocket, buffer, buffer_len, 0);
-		std::string temp = buffer;	
-        std::cout<<temp<<"\n";
-		if(temp=="exit")
+	bytecount = recv(parameters->clientSocket, buffer, buffer_len, 0);
+	std::string temp = buffer;
+	for(int i=0;i<keepaliveList.size();i++)
+	{
+		if(keepaliveList[i].first == temp)
 		{
-			exitrequest = 1;
+			std::cout<<"Update: "<<keepaliveList[i].first<<"\n";
+			keepaliveList[i].second = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
+			return;
 		}
+	}
+	
+std::cout<<"Add: "<<temp<<"\n";
+keepaliveList.push_back(std::make_pair(temp,duration_cast<milliseconds>(system_clock::now().time_since_epoch())));
+ 
 
-    }
-*/
+}
+
 std::list<Server*> serversList;
+
+Server* server_keepalive;
+std::thread keepalive_thread;
+
+void KeepAliveThread()
+{
+	while(1)
+	{
+		milliseconds now = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
+		for(int i=0;i<keepaliveList.size();i++)
+		{
+			if(keepaliveList[i].second.count() +5000 < now.count())
+			{
+				std::cout<<"Remove: "<<keepaliveList[i].first<<"\n";
+				keepaliveList.erase(keepaliveList.begin()+i);
+			}
+		}
+		usleep(1000);
+	}
+}
+
+
+
+
+bool socketeer_server_start_keepalive(int port)
+{
+	server_keepalive = new Server();
+	server_keepalive->initialize(port);
+	server_keepalive->assignCallback(keepalivecb,NULL);
+	keepalive_thread = std::thread(KeepAliveThread);
+	server_keepalive->execute();
+	usleep(10000);
+
+	keepalive_thread.detach();
+	return server_keepalive->isActive();
+}
+
 
 std::string socketeer_server_getstr(Parameters* parameters)
 {

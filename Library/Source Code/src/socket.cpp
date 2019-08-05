@@ -7,8 +7,10 @@ Socket::Socket()
 
 Socket::Socket(int hostPort)
 {
+long arg;
 	m_hostPort = hostPort;
 	m_sock = socket(AF_INET, SOCK_STREAM, 0);
+	usleep(5000);
 	if (m_sock == -1) 
 	{
 		disconnect();
@@ -74,14 +76,21 @@ void Socket::disconnect()
 }
 
 bool Socket::connect(std::string host_name) 
-{    
+{
+int trial = 3;
 	struct sockaddr_in my_addr;
 	my_addr.sin_family = AF_INET;
 	my_addr.sin_port = htons(m_hostPort);
 	memset(&(my_addr.sin_zero), 0, sizeof(my_addr.sin_zero));
 	inet_pton(AF_INET, host_name.c_str(), &my_addr.sin_addr);
-	if (::connect(currSocket(), (struct sockaddr*)&my_addr, sizeof(my_addr)) == -1) 
-		return false; 
+	while(::connect(currSocket(), (struct sockaddr*)&my_addr, sizeof(my_addr)) == -1) 
+	{
+trial--;
+if(trial == 0)
+	return false; 
+
+	usleep(5000);
+	}
 	return true;
 }
 

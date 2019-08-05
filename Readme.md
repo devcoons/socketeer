@@ -56,17 +56,17 @@ Add the proper flag to your compiler
 
 To set In-bound communication: Create Callback function like the following and initialize the socket server
 ```
-    void callback(Parameters* parameters,void * obj)
-    {
-		std::string temp = socketeer_server_getstr(parameters);	
-        std::cout<<temp;
-    }
-    ...
-    ...
-    if(socketeer_server(8000,callback) == false)
-    {
-    	exit(1);
-    }
+void callback(Parameters* parameters,void * obj)
+{
+    std::string temp = socketeer_server_getstr(parameters);	
+    std::cout<<temp;
+}
+...
+...
+if(socketeer_server(8000,callback) == false)
+{
+    exit(1);
+}
 ```
 
 To send a message to another application

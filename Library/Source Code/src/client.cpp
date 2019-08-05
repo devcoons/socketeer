@@ -17,8 +17,14 @@ int Client::send(std::string message)
 	memset(buffer, 0, buffer_len);
 	strcpy(buffer, message.c_str());
 	size_t bytecount;
-	if (::send(socket.currSocket(), buffer, buffer_len, 0) == -1)
+	if (::send(socket.currSocket(), buffer, buffer_len, MSG_DONTWAIT) == -1)
+	{
+		socket.disconnect();
 		return -1;
+	}
+		socket.disconnect();
+
+
 	return 0;
 }
 

@@ -17,7 +17,7 @@
 	#include <list>
 	#include <string>
 	#include <iostream>
-	#include <vector>	
+	#include <vector>
 	#include <fcntl.h>
 	#include <stdio.h>
 	#include <sstream>
@@ -31,6 +31,8 @@
 
 	std::string socketeer_server_getstr(Parameters* parameters);
 	bool socketeer_server(int port,void(*callback)(Parameters * parameters, void * object));
+	bool socketeer_server_start_keepalive(int port);
 	bool socketeer_client(std::string hostname,int port,std::string message);
 	bool socketeer_server_is_active(int port);
+	bool socketeer_server_terminate();
 #endif
