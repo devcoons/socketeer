@@ -36,8 +36,10 @@ $ sudo make install
 ```
 std::string socketeer_server_getstr(Parameters* parameters)
 
-void socketeer_server(int port,void(*callback)(Parameters * parameters, void * object))
+bool socketeer_server(int port,void(*callback)(Parameters * parameters, void * object))
 bool socketeer_client(std::string hostname,int port,std::string message)
+
+bool socketeer_server_is_active(int port)
 ```
 
 ## Usage
@@ -61,7 +63,10 @@ To set In-bound communication: Create Callback function like the following and i
     }
     ...
     ...
-    socketeer_server(8000,callback);
+    if(socketeer_server(8000,callback) == false)
+    {
+    	exit(1);
+    }
 ```
 
 To send a message to another application
