@@ -34,14 +34,19 @@ std::string socketeer_server_getstr(Parameters* parameters)
 	return temp;
 }
 
-void socketeer_server(int port,void(*callback)(Parameters * parameters, void * object))
+bool socketeer_server(int port,void(*callback)(Parameters * parameters, void * object))
 {
 	Server* server = new Server();
 	server->initialize(port);
 	server->assignCallback(callback,NULL);
 	server->execute();
-	serversList.push_back(server);
 	usleep(10000);
+	if(server->isActive()==true)
+	{
+		serversList.push_back(server);
+		return true;
+	}
+	return false;
 }
 
 bool socketeer_client(std::string hostname,int port,std::string message)
@@ -50,3 +55,11 @@ bool socketeer_client(std::string hostname,int port,std::string message)
 	return client.send(message) == 0 ? true : false;
 }
 
+bool socketeer_server_is_active(int port)
+{
+	list <Server*> :: iterator it; 
+	for(it = serversList.begin(); it!= serversList.end(); ++it)
+		if((*it)->getPort() == port)	
+			return (*it)->isActive();
+	return false;
+}

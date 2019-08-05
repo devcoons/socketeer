@@ -23,6 +23,11 @@
 		applicationThread.detach();
 	}
 
+	int Server::getPort()
+	{
+		return port;
+	}
+
 	void Server::execution()
 	{
 		socket= new Socket(port);
@@ -53,7 +58,7 @@
 
 	bool Server::isActive()
 	{
-		return (!socket->isOpen() || !socket->bind() || !socket->listen()) ? false :true;
+		return (socket->isOpen()) ? true : false;
 	}
 
 	void Server::callback(Parameters * p)

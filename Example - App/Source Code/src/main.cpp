@@ -12,17 +12,17 @@
 	}
 
 
-    void callback(Parameters* parameters,void * obj)
-    {
+    	void callback(Parameters* parameters,void * obj)
+    	{
 		std::string temp = socketeer_server_getstr(parameters);	
-        std::cout<<temp;
-    }
+        	std::cout<<temp;
+    	}
 
-    int main(int argc, char ** argv)
+    	int main(int argc, char ** argv)
 	{
-     	int long_index = 0, opt = 0,port = 0;
-        bool is_client=false,is_server=false;
-        std::string host;
+     		int long_index = 0, opt = 0,port = 0;
+        	bool is_client=false,is_server=false;
+        	std::string host;
 		std::string msg;
 
 		static struct option long_options[] = {
@@ -34,8 +34,8 @@
 			{0,				0,					0,	0   }
 		};
 
-        while ( (opt = getopt_long(argc, argv, "csh:p:m:", long_options, &long_index )) != -1 )
-            switch (opt) 
+        	while ( (opt = getopt_long(argc, argv, "csh:p:m:", long_options, &long_index )) != -1 )
+            		switch (opt) 
 			{
 				case 'h' :
 					host.assign(optarg);
@@ -48,11 +48,11 @@
 					break;
 				case 'c' : 
 					is_client = true;
-                    is_server = false;
+                    			is_server = false;
 					break;
 				case 's' : 
-				    is_server = true;
-                    is_client = false;
+				    	is_server = true;
+                    			is_client = false;
 					break;
 				default:
 					print_usage();
@@ -61,19 +61,21 @@
 
         if(is_client == true)
         {
-			printf(socketeer_client(host,port,msg)==true ? "Message successfully sent..\n" : "Message failed to send..\n");
+		printf(socketeer_client(host,port,msg)==true ? "Message successfully sent..\n" : "Message failed to send..\n");
         	return 0;
         }   
 
-		printf("Starting socket server..\n");
-        socketeer_server(port,callback);
-		usleep(5000);
-		
-        if(socketeer_client("127.0.0.1",port,"Socket server active\n")==false)
-        {
-           printf("Socket failed in the initialization..\n"); 
-           return 0;
-        }
+	printf("Starting socket server..\n");
+        if(socketeer_server(port,callback) == false)
+	{
+		printf("Socket failed during the initializatio\nCheck is port is already used.\n");
+		fflush(stdout);
+		fflush(stdin);
+		usleep(10000);
+		return 0;
+	}
+	printf("Socket server active\n");
+
 		
         while(1)
 		{

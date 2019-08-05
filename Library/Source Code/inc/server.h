@@ -11,6 +11,7 @@
 		void execute();
 		void stop();	
 		bool isActive();
+		int getPort();
 		void assignCallback(void(*)(Parameters*, void*), void*);
 	private:
 		Socket* socket;
