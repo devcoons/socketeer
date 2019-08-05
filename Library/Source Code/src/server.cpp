@@ -19,21 +19,21 @@
 
 	void Server::execute()
 	{
-		std::thread applicationServerThread(&Server::execution, this);
-		applicationServerThread.detach();
+		applicationThread = std::thread(&Server::execution, this);
+		applicationThread.detach();
 	}
 
 	void Server::execution()
 	{
-		Socket socket(port);
+		socket= new Socket(port);
 
-		if (!socket.isOpen()) 	{ 	socket.disconnect(); exit(1); }
-		if (!socket.bind()) 	{	socket.disconnect(); exit(1); } 
-		if (!socket.listen()) 	{	socket.disconnect(); exit(1); }
+		if (!socket->isOpen()) 	{ 	socket->disconnect(); exit(1); }
+		if (!socket->bind()) 	{	socket->disconnect(); exit(1); } 
+		if (!socket->listen()) 	{	socket->disconnect(); exit(1); }
 
 		while (true) 
 		{      
-			Parameters * params = socket.accept(); 
+			Parameters * params = socket->accept(); 
 			if (params->clientSocket != -1) 
 			{   
 				struct in_addr inaddr = params->clientAddr.sin_addr;
@@ -49,6 +49,11 @@
 			fflush(stdout); 
 			fflush(stdin); 
 		}
+	}
+
+	bool Server::isActive()
+	{
+		return (!socket->isOpen() || !socket->bind() || !socket->listen()) ? false :true;
 	}
 
 	void Server::callback(Parameters * p)

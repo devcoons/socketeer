@@ -10,8 +10,11 @@
 		void initialize(int);
 		void execute();
 		void stop();	
+		bool isActive();
 		void assignCallback(void(*)(Parameters*, void*), void*);
 	private:
+		Socket* socket;
+		std::thread applicationThread;
 		int port;
 		int selected;
 		void execution();

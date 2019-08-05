@@ -41,6 +41,7 @@ void socketeer_server(int port,void(*callback)(Parameters * parameters, void * o
 	server->assignCallback(callback,NULL);
 	server->execute();
 	serversList.push_back(server);
+	usleep(10000);
 }
 
 bool socketeer_client(std::string hostname,int port,std::string message)
