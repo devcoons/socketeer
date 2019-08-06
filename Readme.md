@@ -34,12 +34,22 @@ $ sudo make install
 ## API
 
 ```
-std::string socketeer_server_getstr(Parameters* parameters)
+	// Server-Controller API
 
-bool socketeer_server(int port,void(*callback)(Parameters * parameters, void * object))
-bool socketeer_client(std::string hostname,int port,std::string message)
+	bool socketeer_server(int port,void(*callback)(Parameters * parameters, void * object));
+	bool socketeer_server_start_keepalive(int port);
+	bool socketeer_server_is_active(int port);
+	bool socketeer_server_terminate();
+	bool socketeer_server_is_client_alive(std::string);
+	int socketeer_server_alive_clients_count();
+	std::string socketeer_server_get_alive_clients();
+	std::string socketeer_server_getstr(Parameters* parameters);
 
-bool socketeer_server_is_active(int port)
+	// Client API
+
+	bool socketeer_client(std::string hostname,int port,std::string message);
+	bool socketeer_client_start_keepalive(std::string host,int port,std::string application_name) ;
+
 ```
 
 ## Usage
@@ -63,18 +73,35 @@ void callback(Parameters* parameters,void * obj)
 }
 ...
 ...
+// Activate Server
 if(socketeer_server(8000,callback) == false)
-{
     exit(1);
-}
+...
+...
+//Activate the Keepalive
+if(socketeer_server_start_keepalive(8001) == false)
+  exit(1);
+...
+...
+...
+//Check if client (by name) is active
+if(socketeer_server_is_client_alive("application 2") == true)
+  cout<<"Is active\n";
+...
+...
+//Get list of clients
+cout<<socketeer_server_get_alive_clients();
 ```
 
 To send a message to another application
 ```
 if(socketeer_client("127.0.0.1",8000,"my message here")==false)
-{
     exit(1);
-}
+
+//Activate Client Keepalive
+if(socketeer_client_start_keepalive("127.0.0.1",8001,"my name")== false)
+  exit(1);
+
 ```
 
 ## Contributing
