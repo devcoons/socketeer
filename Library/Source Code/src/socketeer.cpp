@@ -69,6 +69,7 @@ bool socketeer_client_start_keepalive(std::string host,int port,std::string appl
 	keepalive_client_name = application_name;
 	keepalive_thread = std::thread(KeepAliveClientThread);
 	keepalive_thread.detach();
+	return true;
 }
 
 bool socketeer_server_start_keepalive(int port)
