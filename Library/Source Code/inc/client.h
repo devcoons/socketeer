@@ -1,16 +1,10 @@
-#pragma once
+#ifndef _CLIENT_H
+#define _CLIENT_H
+
 #include "socket.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
-class Client
-{
-public:
-	Client(std::string, int);
-	std::string receive();
-	int send(std::string);
-	void close();
-private:
-	int port;
-	Socket socket;
-	std::string host;
-};
-
+int client_send(char* host, int port, char* msg);
+#endif

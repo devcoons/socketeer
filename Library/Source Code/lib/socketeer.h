@@ -6,7 +6,6 @@
 	#include <errno.h>
 	#include <stdio.h>
 	#include <stdlib.h>
-	#include <stdbool.h>
 	#include <memory>
 	#include <stdio.h>
 	#include <unistd.h>
@@ -23,12 +22,30 @@
 	#include <sstream>
 	#include <stdlib.h>
 
-	typedef struct Parameters
-	{
-		int clientSocket; sockaddr_in clientAddr;
-	}
-	Parameters;
+struct dvc_socket
+{
+	int m_sock;
+	int m_hostport;
+};
 
+typedef struct Parameters
+{
+	int clientSocket;
+	struct sockaddr_in clientAddr;
+	char buffer[2048];
+}
+Parameters;
+
+typedef enum
+{
+	Open = 0,
+	Binded = 1,
+	Listening = 2,
+	OK = 4,
+	Connected = 3,
+	Closed = -1,
+	Error = -2
+}SOCK_Status;
 	// Server-Controller API
 
 	bool socketeer_server(int port,void(*callback)(Parameters * parameters, void * object));

@@ -1,26 +1,23 @@
-#pragma once
+#ifndef _SERVER_H
+#define _SERVER_H
 
-	#include <thread>
+	#include <pthread.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 	#include "socket.h"
 
-	class Server
-	{
-	public:
-		Server();
-		void initialize(int);
-		void execute();
-		void stop();	
-		bool isActive();
-		int getPort();
-		void assignCallback(void(*)(Parameters*, void*), void*);
-	private:
-		Socket* socket;
-		std::thread applicationThread;
-		int port;
-		int selected;
-		void execution();
-		void *callbackObject;
-		void callback(Parameters*);
-		void (*callbackFunction)(Parameters*, void*);	
-	};
 
+struct dvc_server
+{
+	int port;
+	int thread_active;
+	pthread_t thread_id;
+	struct dvc_socket* socket;
+	void (*callbackFunction)(Parameters*, void*);
+};
+
+SOCK_Status server_start(struct dvc_server* srv);
+SOCK_Status server_stop(struct dvc_server* srv);
+
+#endif

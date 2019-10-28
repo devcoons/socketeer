@@ -1,37 +1,28 @@
-#pragma once
+#ifndef _SOCKET_H
+#define _SOCKET_H
 
-#include <memory>
 #include <stdio.h>
-#include <unistd.h>
+#include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
+#include <sys/time.h>
 #include <arpa/inet.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <netdb.h>
 #include "socketeer.h"
-#ifndef TCP_USER_TIMEOUT
-#define TCP_USER_TIMEOUT 18 
+
+
+void socket_disconnect(struct dvc_socket* s);
+void socket_init(struct dvc_socket* s, int port);
+SOCK_Status socket_status(struct dvc_socket* s);
+SOCK_Status socket_bind(struct dvc_socket* s);
+SOCK_Status socket_listen(struct dvc_socket* s);
+Parameters* socket_accept(struct dvc_socket* s);
+SOCK_Status socket_connect(struct dvc_socket* s, char* hostname);
+
 #endif
-
-#define DEFAULT_TEST_PORT       1101
-#define DEFAULT_TIMEOUT         1000
-
-
-class Socket 
-{
-private:
-	int m_sock = -1;
-	int m_hostPort = -1;
-		
-public:
-	Socket();
-	Socket(int hostPort);
-	~Socket();
-	bool bind(void);
-	bool isOpen(void);
-	void disconnect();
-	bool listen(void);	
-	int currSocket(void);
-	Parameters* accept(void);  
-	bool connect(std::string host_name); 	
-};
-

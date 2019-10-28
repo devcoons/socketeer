@@ -2,14 +2,17 @@
 #include "client.h"
 #include "server.h"
 #include <chrono>
+#include <thread>
 
 using namespace std;
 using namespace std::chrono;
 
-Server* server_keepalive;
+static struct dvc_server* srv_ka;
 std::thread keepalive_thread;
 
-std::list<Server*> serversList;
+
+
+std::list<struct dvc_server*> serversList;
 std::vector<pair<std::string,milliseconds>> keepaliveList;
 
 std::string keepalive_client_host;
@@ -47,10 +50,9 @@ void KeepAliveClientThread()
 {
 	while(1)
 	{
-		socketeer_client(keepalive_client_host,keepalive_client_port,keepalive_client_name);
-		if(keepalive_timeout <500)
+		client_send((char*)keepalive_client_host.c_str(), keepalive_client_port, (char*)keepalive_client_name.c_str());
+		if(keepalive_timeout < 500)
 			keepalive_timeout = 500;
-		
 		usleep(keepalive_timeout - 350);
 	}
 }
@@ -87,14 +89,14 @@ bool socketeer_client_start_keepalive(std::string host,int port,std::string appl
 
 bool socketeer_server_start_keepalive(int port)
 {
-	server_keepalive = new Server();
-	server_keepalive->initialize(port);
-	server_keepalive->assignCallback(keepalivecb,NULL);
+	srv_ka = (struct dvc_server*)malloc(sizeof(struct dvc_server));
+	srv_ka->port = port;
+	srv_ka->callbackFunction = keepalivecb;
 	keepalive_thread = std::thread(KeepAliveThread);
-	server_keepalive->execute();
+	server_start(srv_ka);
 	usleep(10000);
 	keepalive_thread.detach();
-	return server_keepalive->isActive();
+	return true;
 }
 
 std::string socketeer_server_getstr(Parameters* parameters)
@@ -126,29 +128,27 @@ std::string socketeer_server_get_alive_clients()
 
 bool socketeer_server(int port,void(*callback)(Parameters * parameters, void * object))
 {
-	Server* server = new Server();
-	server->initialize(port);
-	server->assignCallback(callback,NULL);
-	server->execute();
+
+	struct dvc_server* srv_ = (struct dvc_server*)malloc(sizeof(struct dvc_server));
+	srv_->port = port;
+	srv_->callbackFunction = callback;
+	server_start(srv_);
 	usleep(10000);
-	if(server->isActive()==false)
-		return false;
-	serversList.push_back(server);
+	serversList.push_back(srv_);
 	return true;
 }
 
 bool socketeer_client(std::string hostname,int port,std::string message)
 {
-	Client client(hostname, port);
-	return client.send(message) == 0 ? true : false;
+	client_send((char*)hostname.c_str(), port, (char*)message.c_str());
 }
 
 bool socketeer_server_is_active(int port)
 {
-	list <Server*> :: iterator it; 
-	for(it = serversList.begin(); it!= serversList.end(); ++it)
-		if((*it)->getPort() == port)	
-			return (*it)->isActive();
+	list <struct dvc_server*> :: iterator it;
+	for (it = serversList.begin(); it != serversList.end(); ++it)
+		if ((*it)->port == port)
+			return socket_status((*it)->socket) != -1 ? true : false;
 	return false;
 }
 

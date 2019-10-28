@@ -1,96 +1,63 @@
 #include "socket.h"
 
-Socket::Socket()
+void socket_init(struct dvc_socket* s, int port)
 {
-	
-}
-
-Socket::Socket(int hostPort)
-{
-long arg;
-	m_hostPort = hostPort;
-	m_sock = socket(AF_INET, SOCK_STREAM, 0);
+	s->m_hostport = port;
+	s->m_sock = socket(AF_INET6, SOCK_DGRAM, 0);
 	usleep(5000);
-	if (m_sock == -1) 
-	{
-		disconnect();
-		return;
-	}
-	bool option = 1;
+	if (s->m_sock == -1)
+		return socket_disconnect(s);
 }
 
-Socket::~Socket() 
+void socket_disconnect(struct dvc_socket* s)
 {
-	disconnect();
+	if (s->m_sock == -1)return;
+	close(s->m_sock);
+	s->m_sock = -1;
 }
 
-bool Socket::isOpen(void) 
+SOCK_Status socket_status(struct dvc_socket* s)
 {
-	return m_sock != -1;
+	return s->m_sock != -1 ? Open : Closed;
 }
 
-int Socket::currSocket(void) 
+SOCK_Status socket_bind(struct dvc_socket* s)
 {
-	return m_sock;
-}
+	if(socket_status(s) != Open)
+		return Error;
 
-bool Socket::bind(void) 
-{
-	if (isOpen() == false)	
-		return false;
 	struct sockaddr_in my_addr;
-	my_addr.sin_family = AF_INET;
-	my_addr.sin_port = htons(m_hostPort);
+	my_addr.sin_family = AF_INET6;
+	my_addr.sin_port = htons(s->m_hostport);
 	memset(&(my_addr.sin_zero), 0, 8);
 	my_addr.sin_addr.s_addr = INADDR_ANY;
-	if (::bind(m_sock, (sockaddr*)&my_addr, sizeof(my_addr)) == -1)
-		return false;
-	return true;
+	if (bind(s->m_sock, (struct sockaddr*)&my_addr, sizeof(my_addr)) == -1)
+		return Error;
+	return Binded;
 }
 
-bool Socket::listen(void) 
-{
-	if (isOpen() == false)	return false;
-	if (::listen(m_sock, 10) == -1) 
-		return false;
-	return true;
-}
-
-Parameters* Socket::accept(void)
+Parameters* socket_accept(struct dvc_socket* s)
 {
 	socklen_t addr_size = 0;
-	addr_size = sizeof(sockaddr_in);
-	sockaddr_in clientAddr;    
-	int result =:: accept(m_sock, (sockaddr*)&clientAddr, &addr_size);
-	Parameters * params = (Parameters*)malloc(sizeof(Parameters));
-	params->clientSocket = result;
-	params->clientAddr = clientAddr;
-	return params;
+	addr_size = sizeof(struct sockaddr_in);
+	struct sockaddr_in clientAddr;
+	if (s->m_sock != -1)
+	{
+		Parameters* params = (Parameters*)malloc(sizeof(Parameters));
+		int result = recvfrom(s->m_sock, params->buffer,2048,0, (struct sockaddr*) &clientAddr,&addr_size);
+		params->clientSocket = result;
+		memmove(&params->clientAddr, &clientAddr, sizeof(struct sockaddr_in));	
+		return params;
+	}
+	return NULL;
 }
 
-void Socket::disconnect()
+SOCK_Status socket_connect(struct dvc_socket* s, char *hostname)
 {
-	if (m_sock == -1)return;
-	close(m_sock);
-	m_sock = -1;
-}
-
-bool Socket::connect(std::string host_name) 
-{
-int trial = 3;
 	struct sockaddr_in my_addr;
 	my_addr.sin_family = AF_INET;
-	my_addr.sin_port = htons(m_hostPort);
+	my_addr.sin_port = htons(s->m_hostport);
 	memset(&(my_addr.sin_zero), 0, sizeof(my_addr.sin_zero));
-	inet_pton(AF_INET, host_name.c_str(), &my_addr.sin_addr);
-	while(::connect(currSocket(), (struct sockaddr*)&my_addr, sizeof(my_addr)) == -1) 
-	{
-trial--;
-if(trial == 0)
-	return false; 
-
-	usleep(5000);
-	}
-	return true;
+	inet_pton(AF_INET, hostname, &my_addr.sin_addr);
+	return connect(s->m_sock, (struct sockaddr*) & my_addr, sizeof(my_addr)) == 0 ? Connected : Error;
 }
-
