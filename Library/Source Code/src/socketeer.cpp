@@ -136,6 +136,7 @@ bool socketeer_server(int port,void(*callback)(Parameters * parameters, void * o
 bool socketeer_client(std::string hostname,int port,std::string message)
 {
 	client_send((char*)hostname.c_str(), port, (char*)message.c_str());
+	return true;
 }
 
 bool socketeer_server_is_active(int port)
