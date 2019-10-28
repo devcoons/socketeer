@@ -44,7 +44,7 @@
 			Parameters * params = socket->accept(); 
 			if (params->clientSocket != -1) 
 			{   
-				memove(&inaddr,&params->clientAddr.sin_addr,sizeof(struct in_addr));
+				memmove(&inaddr,&params->clientAddr.sin_addr,sizeof(struct in_addr));
 				inet_ntop(AF_INET, &inaddr, buf, sizeof(buf));
 				std::thread t(&Server::callback, this, params);
 				t.detach();					
