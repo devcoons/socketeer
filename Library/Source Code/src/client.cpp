@@ -9,9 +9,9 @@ int client_send(char* host, int port, char* msg)
 	socket_init(s, port);
 
 	memset(&serveraddr, 0, sizeof(serveraddr));
-	serveraddr.sin6_family = AF_INET6;
+	serveraddr.sin6_family = AF_INET;
 	serveraddr.sin6_port = htons(port);
-	int rc = inet_pton(AF_INET6, host, &serveraddr.sin6_addr.s6_addr);
+	int rc = inet_pton(AF_INET, host, &serveraddr.sin6_addr.s6_addr);
 	if (rc != 1)
 	{
 		int k;

@@ -3,7 +3,7 @@
 void socket_init(struct dvc_socket* s, int port)
 {
 	s->m_hostport = port;
-	s->m_sock = socket(AF_INET6, SOCK_DGRAM, 0);
+	s->m_sock = socket(AF_INET, SOCK_DGRAM, 0);
 	usleep(5000);
 	if (s->m_sock == -1)
 		return socket_disconnect(s);
@@ -27,7 +27,7 @@ SOCK_Status socket_bind(struct dvc_socket* s)
 		return Error;
 
 	struct sockaddr_in my_addr;
-	my_addr.sin_family = AF_INET6;
+	my_addr.sin_family = AF_INET;
 	my_addr.sin_port = htons(s->m_hostport);
 	memset(&(my_addr.sin_zero), 0, 8);
 	my_addr.sin_addr.s_addr = INADDR_ANY;

@@ -41,7 +41,7 @@ void* server_execution(void* arg)
 			if (params->clientSocket != -1 && params!=NULL)
 			{
 				memmove(&inaddr, &params->clientAddr.sin_addr, sizeof(struct in_addr));
-				inet_ntop(AF_INET6, &inaddr, buf, sizeof(buf));
+				inet_ntop(AF_INET, &inaddr, buf, sizeof(buf));
 				usleep(1000);
 				if (srv->callbackFunction != NULL)
 					srv->callbackFunction(params,NULL);
