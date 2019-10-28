@@ -84,6 +84,7 @@ bool socketeer_client_start_keepalive(std::string host,int port,std::string appl
 
 bool socketeer_server_start_keepalive(int port)
 {
+	
 	srv_ka = (struct dvc_server*)malloc(sizeof(struct dvc_server));
 	srv_ka->port = port;
 	srv_ka->callbackFunction = keepalivecb;
@@ -96,12 +97,14 @@ bool socketeer_server_start_keepalive(int port)
 
 std::string socketeer_server_getstr(Parameters* parameters)
 {
-	char buffer[4055];
-	int buffer_len = 4055;
-    memset(buffer, 0, buffer_len);
-	recv(parameters->clientSocket, buffer, buffer_len, 0);
-	std::string temp = buffer;	
-	return temp;
+	int i=0; 
+    string s = ""; 
+	while(parameters->buffer[i] !='\0')
+	{
+		s=s+parameters->buffer[i];
+		i++;
+	}
+	return s;
 }
 
 bool socketeer_server_is_client_alive(std::string arg)
