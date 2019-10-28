@@ -29,12 +29,7 @@ void keepalive_set_timeout(int timeout)
 
 void keepalivecb(Parameters* parameters,void * obj)
 {
-	size_t bytecount;
-	char buffer[4055];
-	int buffer_len = 4055;
-    memset(buffer, 0, buffer_len);
-	bytecount = recv(parameters->clientSocket, buffer, buffer_len, 0);
-	std::string temp = buffer;
+	std::string temp = parameters->buffer;
 	for(int i=0;i<keepaliveList.size();i++)
 	{
 		if(keepaliveList[i].first == temp)
