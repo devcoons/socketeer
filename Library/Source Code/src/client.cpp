@@ -16,7 +16,7 @@ int client_send(char* host, int port, char* msg)
 	{
 		int k;
 	}
-	rc = sendto(s->m_sock, msg, sizeof(msg), 0,
+	rc = sendto(s->m_sock, msg, strlen(msg), 0,
 		(struct sockaddr*) & serveraddr,
 		sizeof(serveraddr));
 	close(s->m_sock);
