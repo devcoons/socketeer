@@ -39,7 +39,7 @@
 	int socketeer_server_alive_clients_count();
 	std::string socketeer_server_get_alive_clients();
 	std::string socketeer_server_getstr(Parameters* parameters);
-
+	void keepalive_set_timeout(int timeout);
 	// Client API
 
 	bool socketeer_client(std::string hostname,int port,std::string message);

@@ -15,6 +15,13 @@ std::vector<pair<std::string,milliseconds>> keepaliveList;
 std::string keepalive_client_host;
 std::string keepalive_client_name;
 int keepalive_client_port;
+int keepalive_timeout = 5000;
+
+
+void keepalive_set_timeout(int timeout)
+{
+	keepalive_timeout = timeout;
+}
 
 
 void keepalivecb(Parameters* parameters,void * obj)
@@ -41,7 +48,10 @@ void KeepAliveClientThread()
 	while(1)
 	{
 		socketeer_client(keepalive_client_host,keepalive_client_port,keepalive_client_name);
-		sleep(2);
+		if(keepalive_timeout <500)
+			keepalive_timeout = 500;
+		
+		usleep(keepalive_timeout - 350);
 	}
 }
 
@@ -52,7 +62,10 @@ void KeepAliveThread()
 		milliseconds now = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
 		for(int i=0;i<keepaliveList.size();i++)
 		{
-			if(keepaliveList[i].second.count() +5000 < now.count())
+			if(keepalive_timeout < 500)
+				keepalive_timeout = 500;
+			
+			if((keepaliveList[i].second.count() + keepalive_timeout) < now.count())
 			{
 				std::cout<<"Remove: "<<keepaliveList[i].first<<"\n";
 				keepaliveList.erase(keepaliveList.begin()+i);

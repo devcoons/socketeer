@@ -35,14 +35,16 @@
 		if (!socket->isOpen()) 	{ 	socket->disconnect(); exit(1); }
 		if (!socket->bind()) 	{	socket->disconnect(); exit(1); } 
 		if (!socket->listen()) 	{	socket->disconnect(); exit(1); }
-
+		
+		char buf[INET_ADDRSTRLEN];
+		struct in_addr inaddr;
+		
 		while (true) 
 		{      
 			Parameters * params = socket->accept(); 
 			if (params->clientSocket != -1) 
 			{   
-				struct in_addr inaddr = params->clientAddr.sin_addr;
-				char buf[INET_ADDRSTRLEN];
+				memove(&inaddr,&params->clientAddr.sin_addr,sizeof(struct in_addr));
 				inet_ntop(AF_INET, &inaddr, buf, sizeof(buf));
 				std::thread t(&Server::callback, this, params);
 				t.detach();					
