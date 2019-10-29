@@ -21,6 +21,7 @@ int keepalive_client_port;
 int keepalive_timeout = 5000;
 
 
+
 void keepalive_set_timeout(int timeout)
 {
 	keepalive_timeout = timeout;
@@ -84,7 +85,6 @@ bool socketeer_client_start_keepalive(std::string host,int port,std::string appl
 
 bool socketeer_server_start_keepalive(int port)
 {
-	
 	srv_ka = (struct dvc_server*)malloc(sizeof(struct dvc_server));
 	srv_ka->port = port;
 	srv_ka->callbackFunction = keepalivecb;
@@ -97,11 +97,11 @@ bool socketeer_server_start_keepalive(int port)
 
 std::string socketeer_server_getstr(Parameters* parameters)
 {
-	int i=0; 
-    string s = ""; 
-	while(parameters->buffer[i] !='\0')
+	int i = 0;
+	string s = "";
+	while (parameters->buffer[i] != '\0')
 	{
-		s=s+parameters->buffer[i];
+		s = s + parameters->buffer[i];
 		i++;
 	}
 	return s;
