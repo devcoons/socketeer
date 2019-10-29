@@ -47,9 +47,9 @@ void KeepAliveClientThread()
 	while(1)
 	{
 		client_send((char*)keepalive_client_host.c_str(), keepalive_client_port, (char*)keepalive_client_name.c_str());
-		if(keepalive_timeout < 500)
-			keepalive_timeout = 500;
-		usleep(keepalive_timeout - 350);
+		if(keepalive_timeout < 700)
+			keepalive_timeout = 700;
+		usleep(keepalive_timeout - 500);
 	}
 }
 
