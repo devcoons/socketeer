@@ -44,6 +44,7 @@ Parameters* socket_accept(struct dvc_socket* s)
 	if (s->m_sock != -1)
 	{
 		Parameters* params = (Parameters*)malloc(sizeof(Parameters));
+		memset(params,0,sizeof(Parameters));
 		int result = recvfrom(s->m_sock, params->buffer,2048,0, (struct sockaddr*) &clientAddr,&addr_size);
 		params->clientSocket = result;
 		memmove(&params->clientAddr, &clientAddr, sizeof(struct sockaddr_in));	
